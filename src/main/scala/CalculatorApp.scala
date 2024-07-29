@@ -1,8 +1,9 @@
 import scalafx.application.JFXApp
 import scalafx.application.JFXApp.PrimaryStage
+import scalafx.beans.property.DoubleProperty
 import scalafx.scene.Scene
 import scalafx.scene.control.{Button, TextArea, TextField}
-import scalafx.scene.layout.{GridPane, VBox}
+import scalafx.scene.layout.{GridPane, VBox, Priority}
 import scalafx.geometry.Pos
 
 // Main application object
@@ -16,13 +17,13 @@ object CalculatorApp extends JFXApp {
     alignment = Pos.CenterRight // Align text to the right
     editable = false // Make the display read-only
     text = "" // Initialize with an empty string
-    style = "-fx-background-color: white; -fx-text-fill: black; -fx-font-size: 20px;" // Set display style
+    style = "-fx-background-color: white; -fx-text-fill: black;" // Set display style
   }
 
   // Create a TextArea for the history log
   val historyDisplay: TextArea = new TextArea {
     editable = false // Make the history log read-only
-    style = "-fx-background-color: white; -fx-text-fill: black; -fx-font-size: 16px;" // Set history display style
+    style = "-fx-background-color: white; -fx-text-fill: black;" // Set history display style
     wrapText = true // Ensure text wraps within the TextArea
   }
 
@@ -45,19 +46,21 @@ object CalculatorApp extends JFXApp {
     buttons.zipWithIndex.foreach { case (row, rowIndex) =>
       row.zipWithIndex.foreach { case (buttonText, colIndex) =>
         val button = new Button(buttonText) {
-          prefWidth = 70 // Increased button width
-          prefHeight = 50 // Set button height
+          maxWidth = Double.MaxValue // Allow button to grow horizontally
+          maxHeight = Double.MaxValue // Allow button to grow vertically
           style = if (Seq("/", "*", "-", "+", "=", "%", "sqrt", "^").contains(buttonText)) {
-            "-fx-background-color: blue; -fx-text-fill: white; -fx-font-size: 18px;" // Set operator button style
+            "-fx-background-color: blue; -fx-text-fill: white;" // Set operator button style
           } else if (Seq("C", "CL").contains(buttonText)) {
-            "-fx-background-color: red; -fx-text-fill: white; -fx-font-size: 18px;" // Set clear button style
+            "-fx-background-color: red; -fx-text-fill: white;" // Set clear button style
           } else if (buttonText.isEmpty) {
             "" // No style for empty button space
           } else {
-            "-fx-background-color: white; -fx-text-fill: blue; -fx-font-size: 18px;" // Set operand button style
+            "-fx-background-color: white; -fx-text-fill: blue;" // Set operand button style
           }
           onAction = _ => handleInput(buttonText) // Handle button click
         }
+        GridPane.setHgrow(button, Priority.Always)
+        GridPane.setVgrow(button, Priority.Always)
         add(button, colIndex, rowIndex)
       }
     }
@@ -92,12 +95,22 @@ object CalculatorApp extends JFXApp {
   // Define the primary stage (main window)
   stage = new PrimaryStage {
     title = "Calculator" // Set the window title
-    scene = new Scene(400, 600) { // Set the window size
+    scene = new Scene {
       root = new VBox {
         alignment = Pos.Center // Center the VBox
         spacing = 20 // Space between elements
         children = Seq(display, buttonGrid, historyDisplay) // Add display, button grid, and history log to the VBox
         style = "-fx-background-color: black;" // Set background color of the VBox
+        VBox.setVgrow(display, Priority.Always)
+        VBox.setVgrow(buttonGrid, Priority.Always)
+        VBox.setVgrow(historyDisplay, Priority.Always)
+      }
+
+      // Listener to adjust the font sizes based on window size
+      width.onChange { (_, _, newValue) =>
+        val newFontSize = newValue.doubleValue() / 30
+        display.setStyle(s"-fx-font-size: ${newFontSize}px; -fx-background-color: white; -fx-text-fill: black;")
+        historyDisplay.setStyle(s"-fx-font-size: ${newValue.doubleValue() / 50}px; -fx-background-color: white; -fx-text-fill: black;")
       }
     }
   }
