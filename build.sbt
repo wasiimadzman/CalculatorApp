@@ -1,8 +1,11 @@
-ThisBuild / version := "0.1.0-SNAPSHOT"
+name := "CalculatorApp"
 
-ThisBuild / scalaVersion := "2.12.0"
+version := "0.1"
 
-lazy val root = (project in file("."))
-  .settings(
-    name := "CalculatorApp"
-  )
+scalaVersion := "2.12.10"
+
+libraryDependencies ++= Seq(
+  "org.scalafx" %% "scalafx" % "8.0.192-R14"
+)
+
+scalacOptions ++= Seq("-deprecation", "-feature", "-unchecked", "-encoding", "utf8")
