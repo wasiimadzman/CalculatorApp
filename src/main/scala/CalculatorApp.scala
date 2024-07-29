@@ -103,7 +103,7 @@ object CalculatorApp extends JFXApp {
         // Input the power operator
         calculator.inputOperator("^")
       case op if Seq("+", "-", "*", "/", "%").contains(op) =>
-        // Input other operators
+        // Input basic operators
         calculator.inputOperator(op)
       case digit =>
         // Input digits
@@ -112,7 +112,7 @@ object CalculatorApp extends JFXApp {
     }
   }
 
-  // Set up the main stage (window) of the application
+  // Set up the main window of the application
   stage = new PrimaryStage {
     title = "Calculator"
     scene = new Scene {
