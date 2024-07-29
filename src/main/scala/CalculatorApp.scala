@@ -1,33 +1,28 @@
 import scalafx.application.JFXApp
 import scalafx.application.JFXApp.PrimaryStage
-import scalafx.beans.property.DoubleProperty
 import scalafx.scene.Scene
 import scalafx.scene.control.{Button, TextArea, TextField}
 import scalafx.scene.layout.{GridPane, VBox, Priority}
 import scalafx.geometry.Pos
+import scala.collection.JavaConverters._
 
-// Main application object
 object CalculatorApp extends JFXApp {
-  // Create a new Calculator instance
   val calculator = new Calculator()
   val history = new History()
 
-  // Create a TextField for the display
   val display: TextField = new TextField {
-    alignment = Pos.CenterRight // Align text to the right
-    editable = false // Make the display read-only
-    text = "" // Initialize with an empty string
-    style = "-fx-background-color: white; -fx-text-fill: black;" // Set display style
+    alignment = Pos.CenterRight
+    editable = false
+    text = ""
+    style = "-fx-background-color: white; -fx-text-fill: black;"
   }
 
-  // Create a TextArea for the history log
   val historyDisplay: TextArea = new TextArea {
-    editable = false // Make the history log read-only
-    style = "-fx-background-color: white; -fx-text-fill: black;" // Set history display style
-    wrapText = true // Ensure text wraps within the TextArea
+    editable = false
+    style = "-fx-background-color: white; -fx-text-fill: black;"
+    wrapText = true
   }
 
-  // Define the button labels in a grid structure
   val buttons = Seq(
     Seq("C", "CL"),
     Seq("7", "8", "9", "/", "sqrt"),
@@ -36,29 +31,34 @@ object CalculatorApp extends JFXApp {
     Seq("", "0", "%", "=")
   )
 
-  // Create a GridPane for the buttons
   val buttonGrid: GridPane = new GridPane {
-    hgap = 10 // Horizontal gap between buttons
-    vgap = 10 // Vertical gap between buttons
-    alignment = Pos.Center // Center the grid
+    hgap = 10
+    vgap = 10
+    alignment = Pos.Center
 
-    // Add buttons to the grid
     buttons.zipWithIndex.foreach { case (row, rowIndex) =>
       row.zipWithIndex.foreach { case (buttonText, colIndex) =>
         val button = new Button(buttonText) {
-          maxWidth = Double.MaxValue // Allow button to grow horizontally
-          maxHeight = Double.MaxValue // Allow button to grow vertically
+          maxWidth = Double.MaxValue
+          maxHeight = Double.MaxValue
           style = if (Seq("/", "*", "-", "+", "=", "%", "sqrt", "^").contains(buttonText)) {
-            "-fx-background-color: blue; -fx-text-fill: white;" // Set operator button style
+            "-fx-background-color: blue; -fx-text-fill: white; -fx-border-radius: 10px; -fx-background-radius: 10px;"
           } else if (Seq("C", "CL").contains(buttonText)) {
-            "-fx-background-color: red; -fx-text-fill: white;" // Set clear button style
+            "-fx-background-color: red; -fx-text-fill: white; -fx-border-radius: 10px; -fx-background-radius: 10px;"
           } else if (buttonText.isEmpty) {
-            "" // No style for empty button space
+            ""
           } else {
-            "-fx-background-color: white; -fx-text-fill: blue;" // Set operand button style
+            "-fx-background-color: white; -fx-text-fill: blue; -fx-border-radius: 10px; -fx-background-radius: 10px;"
           }
-          onAction = _ => handleInput(buttonText) // Handle button click
+          onAction = _ => handleInput(buttonText)
         }
+
+        // Adjust the font size dynamically based on button height
+        button.layoutBoundsProperty().addListener { (_, _, bounds) =>
+          val newFontSize = bounds.getHeight * 0.5
+          button.setStyle(s"-fx-font-size: ${newFontSize}px; ${button.getStyle}")
+        }
+
         GridPane.setHgrow(button, Priority.Always)
         GridPane.setVgrow(button, Priority.Always)
         add(button, colIndex, rowIndex)
@@ -66,7 +66,6 @@ object CalculatorApp extends JFXApp {
     }
   }
 
-  // Function to handle button input
   def handleInput(input: String): Unit = {
     input match {
       case "=" =>
@@ -92,25 +91,29 @@ object CalculatorApp extends JFXApp {
     }
   }
 
-  // Define the primary stage (main window)
   stage = new PrimaryStage {
-    title = "Calculator" // Set the window title
+    title = "Calculator"
     scene = new Scene {
       root = new VBox {
-        alignment = Pos.Center // Center the VBox
-        spacing = 20 // Space between elements
-        children = Seq(display, buttonGrid, historyDisplay) // Add display, button grid, and history log to the VBox
-        style = "-fx-background-color: black;" // Set background color of the VBox
+        alignment = Pos.Center
+        spacing = 20
+        children = Seq(display, buttonGrid, historyDisplay)
+        style = "-fx-background-color: black;"
         VBox.setVgrow(display, Priority.Always)
         VBox.setVgrow(buttonGrid, Priority.Always)
         VBox.setVgrow(historyDisplay, Priority.Always)
       }
 
-      // Listener to adjust the font sizes based on window size
-      width.onChange { (_, _, newValue) =>
-        val newFontSize = newValue.doubleValue() / 30
+      width.onChange { (_, _, newWidth) =>
+        val newFontSize = newWidth.doubleValue() / 30
         display.setStyle(s"-fx-font-size: ${newFontSize}px; -fx-background-color: white; -fx-text-fill: black;")
-        historyDisplay.setStyle(s"-fx-font-size: ${newValue.doubleValue() / 50}px; -fx-background-color: white; -fx-text-fill: black;")
+        historyDisplay.setStyle(s"-fx-font-size: ${newWidth.doubleValue() / 50}px; -fx-background-color: white; -fx-text-fill: black;")
+      }
+
+      height.onChange { (_, _, newHeight) =>
+        val newFontSize = newHeight.doubleValue() / 30
+        display.setStyle(s"-fx-font-size: ${newFontSize}px; -fx-background-color: white; -fx-text-fill: black;")
+        historyDisplay.setStyle(s"-fx-font-size: ${newHeight.doubleValue() / 50}px; -fx-background-color: white; -fx-text-fill: black;")
       }
     }
   }
