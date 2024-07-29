@@ -37,6 +37,9 @@ class Calculator {
         case "/" =>
           if (operand2 != 0) operand1 /= operand2
           else return "Error"
+        case "%" =>
+          if (operand2 != 0) operand1 %= operand2
+          else return "Error"
       }
       currentInput = operand1.toString
     }

@@ -24,7 +24,7 @@ object CalculatorApp extends JFXApp {
     Seq("7", "8", "9", "/"),
     Seq("4", "5", "6", "*"),
     Seq("1", "2", "3", "-"),
-    Seq(".", "0", "+", "="),
+    Seq("%", "0", "+", "="),
   )
 
   // Create a GridPane for the buttons
@@ -39,7 +39,7 @@ object CalculatorApp extends JFXApp {
         val button = new Button(buttonText) {
           prefWidth = 50 // Set button width
           prefHeight = 50 // Set button height
-          style = if (Seq("/", "*", "-", "+", "=").contains(buttonText)) {
+          style = if (Seq("/", "*", "-", "+", "=", "%").contains(buttonText)) {
             "-fx-background-color: blue; -fx-text-fill: white; -fx-font-size: 18px;" // Set operator button style
           } else if (buttonText == "C") {
             "-fx-background-color: red; -fx-text-fill: white; -fx-font-size: 18px;" // Set clear button style
@@ -63,7 +63,7 @@ object CalculatorApp extends JFXApp {
         // Clear the calculator and display
         calculator.clear()
         display.text.value = ""
-      case op if Seq("+", "-", "*", "/").contains(op) =>
+      case op if Seq("+", "-", "*", "/", "%").contains(op) =>
         // Handle operator input
         calculator.inputOperator(op)
       case digit =>
