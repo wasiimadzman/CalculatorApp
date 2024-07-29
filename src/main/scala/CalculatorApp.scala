@@ -32,7 +32,7 @@ object CalculatorApp extends JFXApp {
     Seq("7", "8", "9", "/", "sqrt"),
     Seq("4", "5", "6", "*", "^"),
     Seq("1", "2", "3", "-", "+"),
-    Seq("", "0", "%", "="),
+    Seq("", "0", "%", "=")
   )
 
   // Create a GridPane for the buttons
@@ -45,7 +45,7 @@ object CalculatorApp extends JFXApp {
     buttons.zipWithIndex.foreach { case (row, rowIndex) =>
       row.zipWithIndex.foreach { case (buttonText, colIndex) =>
         val button = new Button(buttonText) {
-          prefWidth = 50 // Set button width
+          prefWidth = 70 // Increased button width
           prefHeight = 50 // Set button height
           style = if (Seq("/", "*", "-", "+", "=", "%", "sqrt", "^").contains(buttonText)) {
             "-fx-background-color: blue; -fx-text-fill: white; -fx-font-size: 18px;" // Set operator button style
